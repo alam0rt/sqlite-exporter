@@ -12,10 +12,7 @@ var (
 	result int64 // test
 )
 
-func QueryMetric(dbFile string, query string) float64 {
-	db := open(dbFile)
-	defer db.Close()
-
+func QueryMetric(db *sql.DB, dbFile string, query string) float64 {
 	var metric float64
 
 	stmt, err := db.Prepare(query)
@@ -39,13 +36,4 @@ func QueryMetric(dbFile string, query string) float64 {
 
 	return metric
 
-}
-
-func open(dbFile string) *sql.DB {
-	log.Print("Opening " + dbFile)
-	db, err := sql.Open("sqlite3", dbFile)
-	if err != nil {
-		log.Print(err)
-	}
-	return db
 }

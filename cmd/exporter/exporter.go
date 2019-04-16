@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/dragontailcom/sqlite-exporter/internal/config"
 	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/database"
 	"bytes"
+	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
@@ -18,9 +19,6 @@ func recordMetrics() {
 	go func() {
 		for {
 			opsProcessed.Inc()
-			wow := float64(database.QueryMetric("Algo.db", "SELECT random() as Metric"))
-			fmt.Println(wow)
-			sqlite_random.Set(wow)
 			time.Sleep(2 * time.Second)
 		}
 	}()
@@ -32,7 +30,6 @@ var (
 		Help: "The total number of processed events",
 	})
 
-	Random_gauge  int64 // test
 	sqlite_random = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "sqlite_random",
 		Help: "Result of 'select random()'",
@@ -55,14 +52,21 @@ func main() {
 	flag.Parse()
 
 	// DEBUG
-	//Random_gauge = database.QueryMetric(*dbArg, "SELECT random() as Metric")
 	c := config.ProcessConfig(*configArg)
 	fmt.Println(c)
-	//
+	// open db
+	db, err := sql.Open("sqlite3", *dbArg)
+	if err != nil {
+		logger.Fatal("Unable to open database")
+	}
 	recordMetrics()
 	logger.Print("Listening on port " + *portArg + "...")
 	logger.Print("Opening " + *dbArg)
-	fmt.Print(&buf)
+	value := database.QueryMetric(db, *dbArg, "SELECT random() as Metric")
+	fmt.Print(value)
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":"+*portArg, nil)
+	err = http.ListenAndServe(":"+*portArg, nil)
+	if err != nil {
+		logger.Fatal(err)
+	}
 }
