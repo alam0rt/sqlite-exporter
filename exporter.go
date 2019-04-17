@@ -6,7 +6,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
-	"time"
 )
 
 var (
@@ -16,7 +15,7 @@ var (
 
 type Metric struct {
 	gauge prometheus.Gauge // holds our gauge objects
-	name  string           // name of metric
+	Name  string           // name of metric
 	help  string           // holds the metric description
 	Value float64          // holds last obtained query result
 }
@@ -39,28 +38,14 @@ func CreateMetric(name string, help string) Metric {
 }
 
 // updates prometheus metric with value in struct
-func updateMetric(m *Metric) {
-	fmt.Printf("updateMetric [%s] => %f\n", m.name, m.Value)
+func UpdateMetric(m *Metric) {
+	fmt.Printf("UpdateMetric [%s] => %f\n", m.Name, m.Value)
 	m.gauge.Set(m.Value)
 }
 
 func SetMetric(name string, v float64) {
 	MetricsMap[name].Value = v
 	fmt.Printf("SetMetric [%s] => %f\n", name, v)
-}
-
-func RecordMetrics() {
-	go func() {
-		for {
-			// iterate over Metrics slice and increase()
-			for _, m := range MetricsMap {
-
-				updateMetric(m)
-				fmt.Printf("RecordMetrics [%s] => %f\n", m.name, m.Value)
-			}
-			time.Sleep(2 * time.Second)
-		}
-	}()
 }
 
 func Listen(port string) {
