@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	d      *sqlite3.SQLiteDriver
-	result int64 // test
+	d *sqlite3.SQLiteDriver
+	//result int64 // test
 )
 
 func QueryMetric(db *sql.DB, dbFile string, query string) float64 {
@@ -27,7 +27,7 @@ func QueryMetric(db *sql.DB, dbFile string, query string) float64 {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&metric)
+		err := rows.Scan(&metric) // make it so column names are used as metric names
 		if err != nil {
 			log.Print(err)
 		}

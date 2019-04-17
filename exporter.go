@@ -10,24 +10,53 @@ import (
 )
 
 var (
-	Metrics []prometheus.Gauge // contains addresses of successful CreateMetric()
+	Metrics    []Metric           // contains addresses of successful CreateMetric()
+	MetricsMap map[string]*Metric = make(map[string]*Metric)
 )
 
-func CreateMetric(name string, help string) prometheus.Gauge {
-	metric := promauto.NewGauge(prometheus.GaugeOpts{
+type Metric struct {
+	gauge prometheus.Gauge // holds our gauge objects
+	name  string           // name of metric
+	help  string           // holds the metric description
+	Value float64          // holds last obtained query result
+}
+
+func CreateMetric(name string, help string) Metric {
+	g := promauto.NewGauge(prometheus.GaugeOpts{
 		Name: name,
 		Help: help,
 	})
-	Metrics = append(Metrics, metric) // append new gauge address to Metrics
-	return metric
+	m := Metric{
+		g,
+		name,
+		help,
+		0, // set metric value to 0
+	}
+	// now we push this metric to the global slice 'Metric'
+	Metrics = append(Metrics, m)
+	MetricsMap[name] = &m
+	return m
+}
+
+// updates prometheus metric with value in struct
+func updateMetric(m *Metric) {
+	fmt.Printf("updateMetric [%s] => %f\n", m.name, m.Value)
+	m.gauge.Set(m.Value)
+}
+
+func SetMetric(name string, v float64) {
+	MetricsMap[name].Value = v
+	fmt.Printf("SetMetric [%s] => %f\n", name, v)
 }
 
 func RecordMetrics() {
 	go func() {
 		for {
 			// iterate over Metrics slice and increase()
-			for _, metric := range Metrics {
-				go metric.Inc()
+			for _, m := range MetricsMap {
+
+				updateMetric(m)
+				fmt.Printf("RecordMetrics [%s] => %f\n", m.name, m.Value)
 			}
 			time.Sleep(2 * time.Second)
 		}
