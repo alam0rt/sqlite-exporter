@@ -18,11 +18,11 @@ type testmetric struct {
 func TestCreateMetric(t *testing.T) {
 	for _, pair := range tests {
 		m := CreateMetric(pair.name, pair.help)
-		if m.value != pair.result {
+		if m.Value != pair.result {
 			t.Error(
 				"For", pair.name,
 				"Expected", pair.result,
-				"Got", m.value,
+				"Got", m.Value,
 			)
 		}
 
