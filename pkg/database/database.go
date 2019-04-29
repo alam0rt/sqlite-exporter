@@ -9,12 +9,10 @@ import (
 
 var (
 	d *sqlite3.SQLiteDriver
-	//result int64 // test
 )
 
-func QueryMetric(db *sql.DB, dbFile string, query string) float64 {
+func QueryMetric(db *sql.DB, query string) float64 {
 	var metric float64
-	fmt.Println(query)
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -32,7 +30,6 @@ func QueryMetric(db *sql.DB, dbFile string, query string) float64 {
 		if err != nil {
 			log.Print(err)
 		}
-		log.Println(metric)
 	}
 
 	return metric

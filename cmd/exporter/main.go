@@ -18,7 +18,7 @@ func main() {
 	// set up a log handler
 	var (
 		buf    bytes.Buffer
-		logger = log.New(&buf, "logger: ", log.Lshortfile)
+		logger = log.New(&buf, "sqlite_exporter: ", log.Lshortfile)
 		err    error
 	)
 	logger.Print("starting sqlite-exporter...")
@@ -31,25 +31,32 @@ func main() {
 
 	flag.Parse()
 
-	config.ProcessConfig(*configArg) // load and process our config
-	c := config.Config
-	for k, v := range c {
-		exporter.CreateMetric(
-			k,
-			v.Description,
-			v.Query,
-		)
-		fmt.Printf("Metric: %s\nQuery: %s\nDescription: %s\n\n", k, v.Query, v.Description)
-	}
+	// Open database
 	DB, err = sql.Open("sqlite3", *dbArg)
 	if err != nil {
 		logger.Fatal("Unable to open database")
 	}
 
+	// load and process our config
+	config.ProcessConfig(*configArg)
+
+	c := config.Config // config.ProcessConfig returns a struct with all of the unmarshalled data
+	for k, v := range c {
+		exporter.CreateMetric(
+			k, // name of metric
+			v.Description,
+			v.Query,
+		)
+	}
+
+	// loop over our metrics
 	metricsLoop(*intervalArg)
-	logger.Print("Listening on port " + *portArg + "...")
-	logger.Print("Opening " + *dbArg)
+
+	logger.Print("Listening on 0.0.0.0:" + *portArg + "...")
+	logger.Print("Opened " + *dbArg)
 	fmt.Print(&buf)
+
+	// finally we can listen on the provided TCP port
 	exporter.Listen(*portArg)
 }
 
@@ -62,7 +69,7 @@ func metricsLoop(i float64) {
 				exporter.SetMetric(
 					m.Name,
 					// todo: start here tomorrow
-					database.QueryMetric(DB, "Algo.db", m.Query),
+					database.QueryMetric(DB, m.Query),
 				)
 				exporter.UpdateMetric(m)
 			}

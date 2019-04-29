@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	//	Metrics    []Metric           // contains addresses of successful CreateMetric()
 	MetricsMap map[string]*Metric = make(map[string]*Metric)
 )
 
@@ -41,13 +40,13 @@ func CreateMetric(name string, help string, query string) Metric {
 
 // updates prometheus metric with value in struct
 func UpdateMetric(m *Metric) {
-	fmt.Printf("UpdateMetric [%s] => %f (%s)\n", m.Name, m.Value, m.Query)
+	//	fmt.Printf("UpdateMetric [%s] => %f (%s)\n", m.Name, m.Value, m.Query)
 	m.gauge.Set(m.Value)
 }
 
 func SetMetric(name string, v float64) {
 	MetricsMap[name].Value = v
-	fmt.Printf("SetMetric [%s] => %f\n", name, v)
+	//	fmt.Printf("SetMetric [%s] => %f\n", name, v)
 }
 
 func Listen(port string) {
