@@ -10,6 +10,7 @@ var (
 	maxConfigBytes int    = 1024 * 8 // max config file size
 	readBytesCount int               // number of bytes read from open config file
 	readBytes      []byte            // the byte array of size maxConfigBytes
+	Config         ConfigFile
 )
 
 func openConfig(config string) []byte {
@@ -28,17 +29,18 @@ func openConfig(config string) []byte {
 	return readBytes[:readBytesCount]
 }
 
-type conf struct {
-	Hits int64 `yaml:"hits"`
-	Time int64 `yaml:"time"`
+type Metric struct {
+	Description string `yaml:"description`
+	Query       string `yaml:"query"`
 }
 
-func ProcessConfig(config string) *conf {
-	f := openConfig(config)      // set f as our byte array
-	var c *conf                  // init a struct
-	err := yaml.Unmarshal(f, &c) // read yaml into the struct
+type ConfigFile map[string]Metric // set up a new type
+
+func ProcessConfig(config string) interface{} {
+	f := openConfig(config)           // set f as our byte array
+	err := yaml.Unmarshal(f, &Config) // read yaml into the map
 	if err != nil {
 		log.Fatal(err)
 	}
-	return c
+	return Config
 }

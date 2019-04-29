@@ -2,7 +2,7 @@ package main
 
 import (
 	"bitbucket.org/dragontailcom/sqlite-exporter"
-	//	"bitbucket.org/dragontailcom/sqlite-exporter/internal/config"
+	"bitbucket.org/dragontailcom/sqlite-exporter/internal/config"
 	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/database"
 	"bytes"
 	"database/sql"
@@ -26,24 +26,25 @@ func main() {
 	// Set up argument parsing
 	portArg := flag.String("port", "9001", "a port to listen on")
 	dbArg := flag.String("database", "Algo.db", "a sqlite3 database")
-	intervalArg := flag.Float64("interval", 15, "per second interval to query the database")
-	//	configArg := flag.String("config", "configuration.yml", "sqlite-exporter configuration file")
+	intervalArg := flag.Float64("interval", 60, "per second interval to query the database")
+	configArg := flag.String("config", "configuration.yml", "sqlite-exporter configuration file")
 
 	flag.Parse()
 
-	//c := config.ProcessConfig(*configArg)
+	config.ProcessConfig(*configArg) // load and process our config
+	c := config.Config
+	for k, v := range c {
+		exporter.CreateMetric(
+			k,
+			v.Description,
+			v.Query,
+		)
+		fmt.Printf("Metric: %s\nQuery: %s\nDescription: %s\n\n", k, v.Query, v.Description)
+	}
 	DB, err = sql.Open("sqlite3", *dbArg)
 	if err != nil {
 		logger.Fatal("Unable to open database")
 	}
-
-	// CREATE
-	demoMetric := "sqlite3_random"
-	exporter.CreateMetric(
-		demoMetric,
-		"Example metric which is updated with the output of SELECT random()",
-	)
-	// CREATE END
 
 	metricsLoop(*intervalArg)
 	logger.Print("Listening on port " + *portArg + "...")
@@ -60,7 +61,8 @@ func metricsLoop(i float64) {
 			for _, m := range exporter.MetricsMap {
 				exporter.SetMetric(
 					m.Name,
-					database.QueryMetric(DB, "Algo.db", "SELECT random() as metric"),
+					// todo: start here tomorrow
+					database.QueryMetric(DB, "Algo.db", m.Query),
 				)
 				exporter.UpdateMetric(m)
 			}

@@ -14,6 +14,7 @@ var (
 
 func QueryMetric(db *sql.DB, dbFile string, query string) float64 {
 	var metric float64
+	fmt.Println(query)
 
 	stmt, err := db.Prepare(query)
 	if err != nil {

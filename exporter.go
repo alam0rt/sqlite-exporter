@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	Metrics    []Metric           // contains addresses of successful CreateMetric()
+	//	Metrics    []Metric           // contains addresses of successful CreateMetric()
 	MetricsMap map[string]*Metric = make(map[string]*Metric)
 )
 
@@ -18,9 +18,10 @@ type Metric struct {
 	Name  string           // name of metric
 	help  string           // holds the metric description
 	Value float64          // holds last obtained query result
+	Query string           // holds the query to run against target db
 }
 
-func CreateMetric(name string, help string) Metric {
+func CreateMetric(name string, help string, query string) Metric {
 	g := promauto.NewGauge(prometheus.GaugeOpts{
 		Name: name,
 		Help: help,
@@ -30,16 +31,17 @@ func CreateMetric(name string, help string) Metric {
 		name,
 		help,
 		0, // set metric value to 0
+		query,
 	}
 	// now we push this metric to the global slice 'Metric'
-	Metrics = append(Metrics, m)
+	//	Metrics = append(Metrics, m)
 	MetricsMap[name] = &m
 	return m
 }
 
 // updates prometheus metric with value in struct
 func UpdateMetric(m *Metric) {
-	fmt.Printf("UpdateMetric [%s] => %f\n", m.Name, m.Value)
+	fmt.Printf("UpdateMetric [%s] => %f (%s)\n", m.Name, m.Value, m.Query)
 	m.gauge.Set(m.Value)
 }
 
