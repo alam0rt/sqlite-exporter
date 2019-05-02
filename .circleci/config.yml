@@ -51,8 +51,8 @@ jobs: # basic units of work in a run
       - run:
           name: Start sqlite-exporter
           command: |
+            printf "%s\n  %s\n    %s\n  %s" 'sqlite_random:' 'query: |' 'select random()' 'description: returns a random float' > configuration.yml
             touch Algo.db
-            touch configuration.yml
             ./sqlite-exporter
           background: true # keep service running and proceed to next step
 
