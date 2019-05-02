@@ -40,7 +40,7 @@ func ProcessConfig(config string) interface{} {
 	f := openConfig(config)           // set f as our byte array
 	err := yaml.Unmarshal(f, &Config) // read yaml into the map
 	if err != nil {
-		logging.Error.Fatal(err)
+		logging.Error.Fatal("Unable to read configuration file: ", err)
 	}
 	return Config
 }
