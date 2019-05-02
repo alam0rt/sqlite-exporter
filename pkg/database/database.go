@@ -1,10 +1,10 @@
 package database
 
 import (
+	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
 	"database/sql"
 	"fmt"
 	"github.com/mattn/go-sqlite3"
-	"log"
 )
 
 var (
@@ -26,9 +26,10 @@ func QueryMetric(db *sql.DB, query string) float64 {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&metric) // make it so column names are used as metric names
+		err := rows.Scan(&metric) // make it so column name aliases are used as metric names
 		if err != nil {
-			log.Print(err)
+			logging.Error.Print(err)
+			logging.Error.Fatal("'", query, "' may contain an error and/or is returning more than one result")
 		}
 	}
 

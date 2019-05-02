@@ -4,24 +4,17 @@ import (
 	"bitbucket.org/dragontailcom/sqlite-exporter"
 	"bitbucket.org/dragontailcom/sqlite-exporter/internal/config"
 	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/database"
-	"bytes"
+	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
 	"database/sql"
 	"flag"
-	"fmt"
-	"log"
+	"os"
 	"time"
 )
 
 var DB *sql.DB // set up package level DB reference
 
 func main() {
-	// set up a log handler
-	var (
-		buf    bytes.Buffer
-		logger = log.New(&buf, "sqlite_exporter: ", log.Lshortfile)
-		err    error
-	)
-	logger.Print("starting sqlite-exporter...")
+	logging.Output.Print("starting sqlite-exporter...")
 
 	// Set up argument parsing
 	portArg := flag.String("port", "9001", "a port to listen on")
@@ -32,9 +25,13 @@ func main() {
 	flag.Parse()
 
 	// Open database
+	_, err := os.Open(*dbArg)
+	if err != nil {
+		logging.Error.Fatal("Unable to open database file: ", *dbArg)
+	}
 	DB, err = sql.Open("sqlite3", *dbArg)
 	if err != nil {
-		logger.Fatal("Unable to open database")
+		logging.Error.Fatal("Unable to read database")
 	}
 
 	// load and process our config
@@ -52,9 +49,8 @@ func main() {
 	// loop over our metrics
 	metricsLoop(*intervalArg)
 
-	logger.Print("Listening on 0.0.0.0:" + *portArg + "...")
-	logger.Print("Opened " + *dbArg)
-	fmt.Print(&buf)
+	logging.Output.Print("Listening on 0.0.0.0:" + *portArg + "...")
+	logging.Output.Print("Opened " + *dbArg)
 
 	// finally we can listen on the provided TCP port
 	exporter.Listen(*portArg)

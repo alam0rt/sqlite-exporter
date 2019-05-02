@@ -17,7 +17,7 @@ type testmetric struct {
 // Creates a test metric and tests if the value is correct
 func TestCreateMetric(t *testing.T) {
 	for _, pair := range tests {
-		m := CreateMetric(pair.name, pair.help)
+		m := CreateMetric(pair.name, "test", pair.help)
 		if m.Value != pair.result {
 			t.Error(
 				"For", pair.name,

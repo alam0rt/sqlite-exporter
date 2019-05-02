@@ -7,6 +7,7 @@ import (
 
 var tests = []testquery{
 	{"SELECT count(random())", 1},
+	{"SELECT 0", 0},
 }
 
 type testquery struct {
@@ -25,7 +26,7 @@ func TestQuery(t *testing.T) {
 		)
 	}
 	for _, pair := range tests {
-		r := QueryMetric(db, "Test.db", pair.query)
+		r := QueryMetric(db, pair.query)
 		if r != pair.result {
 			t.Error(
 				"For", pair.query,
@@ -34,5 +35,22 @@ func TestQuery(t *testing.T) {
 			)
 		}
 
+	}
+}
+
+func BenchmarkOpenDb(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _ = sql.Open("sqlite3", "Test.db")
+	}
+}
+
+func BenchmarkQueryMetric(b *testing.B) {
+	db, _ := sql.Open("sqlite3", "Test.db")
+	for _, pair := range tests {
+		b.Run(pair.query, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = QueryMetric(db, pair.query)
+			}
+		})
 	}
 }
