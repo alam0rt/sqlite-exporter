@@ -50,7 +50,9 @@ jobs: # basic units of work in a run
 
       - run:
           name: Start sqlite-exporter
-          command: /tmp/sqlite-exporter
+          command: |
+            chmod +x /tmp/sqlite-exporter
+            /tmp/sqlite-exporter
           background: true # keep service running and proceed to next step
 
       - run:
