@@ -51,6 +51,7 @@ jobs: # basic units of work in a run
       - run:
           name: Start sqlite-exporter
           command: |
+            touch Algo.db
             ./sqlite-exporter
           background: true # keep service running and proceed to next step
 
