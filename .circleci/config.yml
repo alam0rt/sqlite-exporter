@@ -5,8 +5,6 @@ jobs: # basic units of work in a run
       # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
       - image: golang:stretch
       # CircleCI PostgreSQL images available at: https://hub.docker.com/r/circleci/postgres/
-        environment:
-          CC: /usr/bin/musl-gcc
     # directory where steps are run. Path must conform to the Go Workspace requirements
     working_directory: /go/src/bitbucket.org/dragontailcom/sqlite-exporter/
 
@@ -42,7 +40,7 @@ jobs: # basic units of work in a run
 
       - run: 
           name: Build
-          command: go build --ldflags '-linkmode external -extldflags "-static"' -o /tmp/sqlite-exporter
+          command: CC=/usr/bin/musl-gcc go build --ldflags '-linkmode external -extldflags "-static"' -o /tmp/sqlite-exporter
       - save_cache: # Store cache in the /go/pkg directory
           key: v1-pkg-cache
           paths:
