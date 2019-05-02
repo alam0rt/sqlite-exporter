@@ -33,6 +33,13 @@ jobs: # basic units of work in a run
             apt-get update
             apt-get install -y musl musl-tools
 
+      - run:
+          name: Get libraries
+          command: |
+            go get github.com/prometheus/client_golang/prometheus/promauto
+            go get github.com/prometheus/client_golang/prometheus/promhttp
+            go get github.com/mattn/go-sqlite3
+
       - run: 
           name: Build
           command: go build --ldflags '-linkmode external -extldflags "-static"' -o /tmp/sqlite-exporter
