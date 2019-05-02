@@ -42,13 +42,7 @@ jobs: # basic units of work in a run
       - run: 
           name: Build
           command: |
-            CC=/usr/bin/musl-gcc \
-            go build \
-              --ldflags \
-              '-linkmode external \
-              -extldflags "-static"' \
-            -o /tmp/sqlite-exporter \
-            cmd/exporter/main.go
+            CC=/usr/bin/musl-gcc go build --ldflags '-linkmode external -extldflags "-static"' -o /tmp/sqlite-exporter cmd/exporter/main.go
       - save_cache: # Store cache in the /go/pkg directory
           key: v1-pkg-cache
           paths:
