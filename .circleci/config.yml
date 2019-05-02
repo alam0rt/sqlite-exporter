@@ -37,6 +37,7 @@ jobs: # basic units of work in a run
             go get github.com/prometheus/client_golang/prometheus/promauto
             go get github.com/prometheus/client_golang/prometheus/promhttp
             go get github.com/mattn/go-sqlite3
+            go get gopkg.in/yaml.v2
 
       - run: 
           name: Build
