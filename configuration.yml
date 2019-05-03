@@ -1,0 +1,3 @@
+sqlite_random:
+  query: select random() as metric
+  description: returns a random float
