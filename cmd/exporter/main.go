@@ -13,7 +13,7 @@ import (
 
 var DB *sql.DB // set up package level DB reference
 
-const Version = "0.1.1~BTO"
+const Version = "0.1.2~dev"
 
 func main() {
 	logging.Output.Printf("starting sqlite-exporter %s...", Version)
