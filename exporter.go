@@ -1,7 +1,7 @@
 package exporter
 
 import (
-	"fmt"
+	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -53,7 +53,7 @@ func Listen(port string) {
 	http.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Println("IMPLEMENT")
+		logging.Error.Printf("unable to listen on %i: %s\n", port, err)
 	}
 
 }

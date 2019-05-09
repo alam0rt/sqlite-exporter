@@ -13,8 +13,10 @@ import (
 
 var DB *sql.DB // set up package level DB reference
 
+const Version = "0.1.1~BTO"
+
 func main() {
-	logging.Output.Print("starting sqlite-exporter...")
+	logging.Output.Printf("starting sqlite-exporter %s...", Version)
 
 	// Set up argument parsing
 	portArg := flag.String("port", "9001", "a port to listen on")
@@ -26,13 +28,17 @@ func main() {
 
 	// Open database
 	_, err := os.Open(*dbArg)
+
 	if err != nil {
 		logging.Error.Fatal("Unable to open database file: ", *dbArg)
 	}
-	DB, err = sql.Open("sqlite3", *dbArg)
+	DB, err = sql.Open("sqlite3", *dbArg+"?mode=ro&_busy_timeout=300&cache=shared")
 	if err != nil {
 		logging.Error.Fatal("Unable to read database")
 	}
+
+	// fix issue where multiple threads were locking DB
+	DB.SetMaxOpenConns(1)
 
 	// load and process our config
 	config.ProcessConfig(*configArg)
@@ -47,7 +53,7 @@ func main() {
 	}
 
 	// loop over our metrics
-	metricsLoop(*intervalArg)
+	metricsLoop(*intervalArg, *dbArg)
 
 	logging.Output.Print("Listening on 0.0.0.0:" + *portArg + "...")
 	logging.Output.Print("Opened " + *dbArg)
@@ -56,8 +62,8 @@ func main() {
 	exporter.Listen(*portArg)
 }
 
-// iterates over our collection of metrics every n seconds and updates them
-func metricsLoop(i float64) {
+// metricsLoop iterates over our collection of metrics every n seconds and updates them
+func metricsLoop(i float64, dbPath string) {
 	go func() {
 		for {
 			// iterate over Metrics slice and increase()
@@ -65,7 +71,8 @@ func metricsLoop(i float64) {
 				exporter.SetMetric(
 					m.Name,
 					// todo: start here tomorrow
-					database.QueryMetric(DB, m.Query),
+					//database.QueryMetric(DB, m.Query),
+					database.QueryMetricFallback(dbPath, m.Query),
 				)
 				exporter.UpdateMetric(m)
 			}
