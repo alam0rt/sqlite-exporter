@@ -60,7 +60,7 @@ func Listen(port string) {
 	http.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		logging.Error.Printf("unable to listen on %i: %s\n", port, err)
+		logging.Error.Printf("unable to listen on %s: %s\n", port, err)
 	}
 
 }

@@ -70,7 +70,6 @@ func metricsLoop(i float64, dbPath string) {
 			for _, m := range exporter.MetricsMap {
 				exporter.SetMetric(
 					m.Name,
-					// todo: start here tomorrow
 					//database.QueryMetric(DB, m.Query),
 					database.QueryMetricFallback(dbPath, m.Query),
 				)
