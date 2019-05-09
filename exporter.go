@@ -20,6 +20,7 @@ type Metric struct {
 	Query string           // holds the query to run against target db
 }
 
+// CreateMetric builds a Metric struct and pushes it into a global map
 func CreateMetric(name string, help string, query string) Metric {
 	g := promauto.NewGauge(prometheus.GaugeOpts{
 		Name: name,
@@ -38,17 +39,23 @@ func CreateMetric(name string, help string, query string) Metric {
 	return m
 }
 
-// updates prometheus metric with value in struct
+// UpdateMetric takes a given pointer to a Metric struct
+// and passes the new value of the metric to Prometheus so
+// that the metric is updated.
 func UpdateMetric(m *Metric) {
 	//	fmt.Printf("UpdateMetric [%s] => %f (%s)\n", m.Name, m.Value, m.Query)
 	m.gauge.Set(m.Value)
 }
 
+// SetMetric takes a name of a metric that has been created and exists
+// in the MetricsMap map and sets its value to whatever float is provided.
 func SetMetric(name string, v float64) {
 	MetricsMap[name].Value = v
 	//	fmt.Printf("SetMetric [%s] => %f\n", name, v)
 }
 
+// Listen takes a port number as a string and sets up a "/metrics" handler
+// which everything is exported to.
 func Listen(port string) {
 	http.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(":"+port, nil)
