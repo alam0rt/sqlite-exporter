@@ -1,7 +1,7 @@
 package exporter
 
 import (
-	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
+	"github.com/alam0rt/sqlite-exporter/pkg/logging"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

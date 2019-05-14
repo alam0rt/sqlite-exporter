@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bitbucket.org/dragontailcom/sqlite-exporter"
-	"bitbucket.org/dragontailcom/sqlite-exporter/internal/config"
-	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/database"
-	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
 	"database/sql"
 	"flag"
+	"github.com/alam0rt/sqlite-exporter"
+	"github.com/alam0rt/sqlite-exporter/internal/config"
+	"github.com/alam0rt/sqlite-exporter/pkg/database"
+	"github.com/alam0rt/sqlite-exporter/pkg/logging"
 	"os"
 	"time"
 )
