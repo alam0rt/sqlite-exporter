@@ -1,7 +1,7 @@
 package config
 
 import (
-	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
+	"github.com/alam0rt/sqlite-exporter/pkg/logging"
 	yaml "gopkg.in/yaml.v2"
 	"os"
 )

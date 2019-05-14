@@ -1,9 +1,9 @@
 package database
 
 import (
-	"bitbucket.org/dragontailcom/sqlite-exporter/pkg/logging"
 	"bytes"
 	"database/sql"
+	"github.com/alam0rt/sqlite-exporter/pkg/logging"
 	"github.com/mattn/go-sqlite3"
 	"os/exec"
 	"strconv"
