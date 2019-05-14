@@ -20,7 +20,7 @@ func main() {
 
 	// Set up argument parsing
 	portArg := flag.String("port", "9001", "a port to listen on")
-	dbArg := flag.String("database", "Algo.db", "a sqlite3 database")
+	dbArg := flag.String("database", "database.db", "a sqlite3 database")
 	intervalArg := flag.Float64("interval", 60, "per second interval to query the database")
 	configArg := flag.String("config", "configuration.yml", "sqlite-exporter configuration file")
 
